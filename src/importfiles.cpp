@@ -1,4 +1,5 @@
 #include "importfiles.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -18,8 +19,11 @@ vector<vector<string>> importFile(string filename)
             stringstream str(line);
 
             while (getline(str, word, ','))
+            {
+                removeEscapeCharacters(word);
                 row.push_back(word);
-            content.push_back(row);
+                content.push_back(row);
+            }
         }
     }
     else
@@ -52,7 +56,8 @@ vector<double> getValue(string filename, int column)
             stringstream str(line);
 
             while (getline(str, word, ','))
-                row.push_back(word);
+                removeEscapeCharacters(word);
+            row.push_back(word);
             if (row[column] == "AVERAGE")
             {
                 content.push_back(1);

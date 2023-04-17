@@ -1,4 +1,5 @@
 #include "Node.hpp"
+#include "utils.hpp"
 
 Node::Node() : filename(""), attributes(vector<string>()), links(vector<Link>())
 {
@@ -31,16 +32,22 @@ vector<string> Node::getAttribute()
 
             while (getline(str, word, ','))
             {
+                removeEscapeCharacters(word);
                 this->attributes.push_back(word);
             }
         }
 
         else
         {
-            cout << "Could not open the file\n";
+            cout << "Could not open the file" << filename.c_str() << "\n";
         }
     }
     return this->attributes;
+}
+
+vector<Link> Node::getLinks() const
+{
+    return this->links;
 }
 
 void Node::addLink(Link link)
