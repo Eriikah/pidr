@@ -22,21 +22,13 @@ vector<vector<string>> importFile(string filename)
             {
                 removeEscapeCharacters(word);
                 row.push_back(word);
-                content.push_back(row);
             }
+            content.push_back(row);
         }
     }
     else
         cout << "Could not open the file\n";
 
-    for (long unsigned int i = 0; i < content.size(); i++)
-    {
-        for (long unsigned int j = 0; j < content[i].size(); j++)
-        {
-            cout << content[i][j] << " ";
-        }
-        cout << "\n";
-    }
     return content;
 }
 
@@ -56,8 +48,10 @@ vector<double> getValue(string filename, int column)
             stringstream str(line);
 
             while (getline(str, word, ','))
+            {
                 removeEscapeCharacters(word);
-            row.push_back(word);
+                row.push_back(word);
+            }
             if (row[column] == "AVERAGE")
             {
                 content.push_back(1);

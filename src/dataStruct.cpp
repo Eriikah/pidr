@@ -24,6 +24,23 @@ Attribute::Attribute() : name(""), filename(""), column(0)
 Attribute::Attribute(string name, string filename, int column) : name(name), filename(filename), column(column)
 {
 }
+
+class Element
+{
+public:
+    string id;
+    Attribute att;
+    string value;
+    Element();
+    Element(string id, Attribute att, string value);
+};
+Element::Element() : id(""), att(Attribute()), value("")
+{
+}
+Element::Element(string id, Attribute att, string value) : id(id), att(att), value(value)
+{
+}
+
 vector<Attribute> list_att;
 Attribute node;
 
@@ -61,6 +78,45 @@ void setupNodesAndLinks()
 
     students.addLink(follows);
     prof.addLink(teach);
+}
+
+vector<Element> getElements(Attribute X)
+{
+    vector<vector<string>> content;
+    vector<string> row;
+    string line, word;
+
+    fstream file(X.filename, ios::in);
+    if (file.is_open())
+    {
+
+        while (getline(file, line))
+        {
+            row.clear();
+
+            stringstream str(line);
+
+            while (getline(str, word, ','))
+            {
+                removeEscapeCharacters(word);
+                row.push_back(word);
+            }
+            content.push_back(row);
+        }
+    }
+    else
+    {
+        cout << "Could not open the file\n";
+    }
+
+    vector<Element> all_Els = vector<Element>();
+    long unsigned int k = X.column;
+    for (long unsigned int i = 0; i < content.size(); i++)
+    {
+        Element temp = Element(content[i][0], X, content[i][k]);
+        all_Els.push_back(temp);
+    }
+    return all_Els;
 }
 
 Node getClassRec(Attribute att, Node begin_node, vector<Node> already_visited)
@@ -194,6 +250,45 @@ vector<string> pathStep(Attribute observedAttribute, vector<variant<Node, Link>>
         return names;
     }
 }
+vector<Element> getLinkedElements(Element el, vector<variant<Node, Link>> Path)
+{
+    vector<Element> buffer = vector<Element>();
+    if (getClass(el.att).getFilename() == Path.back().getFilename())
+    {
+        buffer.push_back(el);
+        return buffer;
+    }
+    else
+    {
+        vector<Element> list_next_el = pathStep(el, Path);
+        for (long unsigned int i = 0; i < list_next_el.size(); i++)
+        {
+            vector<Element> newlist = getLinkedElements(list_next_el[i], Path);
+            buffer.insert(buffer.end(), newlist.begin(), newlist.end());
+        }
+        return buffer;
+    }
+}
+
+vector<vector<string>> getValues(Attribute X, Attribute Y)
+{
+    vector<variant<Node, Link>> Path = getPath(X, Y);
+    vector<vector<string>> CouplesXY;
+    vector<Element> XElements = getElements(X);
+    for (long unsigned int i = 0; i < XElements.size(); i++)
+    {
+        vector<Element> YElements = getLinkedElements(XElements[i], Path);
+        for (long unsigned int j = 0; j < YElements.size(); j++)
+        {
+            vector<string> temp = vector<string>();
+            temp.push_back(XElements[i].value);
+            temp.push_back(YElements[j].value);
+            CouplesXY.push_back(temp);
+        }
+    }
+
+    return CouplesXY;
+}
 
 vector<string> pot(Attribute node)
 {
@@ -210,11 +305,18 @@ vector<string> pot(Attribute node)
     // TODO:la metrique
     return list_pot;
 }
+
 int main()
 {
     setupNodesAndLinks();
-    Attribute test = Attribute("Rating", "resources/Professeurs.csv", 1);
+    Attribute test1 = Attribute("Rating", "resources/Professeurs.csv", 1);
+    Attribute test2 = Attribute("Teaching Ability", "resources/Professeurs.csv", 1);
     // cout << getClass(test, prof, vector<Node>()).getFilename() << "\n";
+    vector<Element> a = getElements(test1);
+    for (long unsigned i = 0; i < a.size(); i++)
+    {
+        cout << a[i].id.c_str() << " " << a[i].value.c_str() << "\n";
+    }
 
     return 0;
 }
