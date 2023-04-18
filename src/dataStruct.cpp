@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iterator>
 #include <map>
+#include <variant>
+#include <algorithm>
 using namespace std;
 
 class Attribute
@@ -101,6 +103,50 @@ Node getClass(Attribute att, Node begin_node, vector<Node> already_visited)
         }
     }
     return foundClass;
+}
+
+vector<variant<Node, Link>> scoutPath(Node startingNode, Node destinationNode, vector<Node> visitedClasses)
+{
+    if (startingNode.getFilename() == destinationNode.getFilename())
+    {
+        vector<variant<Node, Link>> path;
+        path.insert(path.begin(), startingNode);
+        return path;
+    }
+    else
+    {
+        vector<variant<Node, Link>> pathStep;
+        for (auto link : startingNode.getLinks())
+        {
+            pathStep.insert(pathStep.begin(), link);
+            for (auto pathClass : link.getClasses())
+            {
+                if (find(visitedClasses.begin(), visitedClasses.end(), pathClass) != visitedClasses.end())
+                {
+                    visitedClasses.insert(visitedClasses.end(), pathClass);
+                    vector<variant<Node, Link>> updatedPath = scoutPath(pathClass, destinationNode, visitedClasses);
+                    pathStep.insert(pathStep.end(), updatedPath.begin(), updatedPath.end());
+                    return pathStep;
+                }
+            }
+        }
+    }
+}
+
+vector<variant<Node, Link>> getPath(Attribute attributeX, Attribute attributeY)
+{
+    Node ClassX = getClass(attributeX);
+    Node ClassY = getClass(attributeY);
+    vector<variant<Node, Link>> path;
+    path.insert(path.begin(), ClassX);
+
+    if (ClassX.getFilename() != ClassY.getFilename())
+    {
+        Node lookedNode = ClassX;
+        vector<Node> visitedClasses;
+        path.insert(path.end(), scoutPath(ClassX, ClassY, visitedClasses).begin(), scoutPath(ClassX, ClassY, visitedClasses).end());
+    }
+    return path;
 }
 
 // void getValues(AttributeX, AttributeY) {}

@@ -6,11 +6,6 @@
 #include <math.h>
 using namespace std;
 
-double correlation(multimap<string, double> main_map, multimap<string, double> second_map, vector<double, double> couple)
-{
-    return (esperance(couple) - esperance(main_map) * esperance(second_map)) / (ecart_type(main_map) * ecart_type(second_map));
-}
-
 double esperance(multimap<string, double> map)
 {
     multimap<double, int> probability_map;
@@ -27,12 +22,12 @@ double esperance(multimap<string, double> map)
     return esperance;
 }
 
-double esperance(vector<double, double> couple)
+double esperance(vector<pair<double, double>> couple)
 {
     multimap<double, int> probability_map;
-    for (vector<double, double>::iterator it = couple.begin(); it != couple.end(); ++it)
+    for (vector<pair<double, double>>::iterator it = couple.begin(); it != couple.end(); ++it)
     {
-        probability_map.find(it[0] * it[1])++;
+        probability_map.find(it.base()->first * it.base()->second)++;
     }
     int n = couple.size();
     double esperance = 0;
@@ -41,6 +36,16 @@ double esperance(vector<double, double> couple)
         esperance += it->first * (it->second) / n;
     }
     return esperance;
+}
+
+double moyenne(multimap<string, double> map)
+{
+    double buffer = 0;
+    for (multimap<string, double>::iterator it = map.begin(); it != map.end(); ++it)
+    {
+        buffer += it->second;
+    }
+    return buffer / map.size();
 }
 
 double ecart_type(multimap<string, double> map)
@@ -54,12 +59,7 @@ double ecart_type(multimap<string, double> map)
     return sqrt(buffer / map.size());
 }
 
-double moyenne(multimap<string, double> map)
+double correlation(multimap<string, double> main_map, multimap<string, double> second_map, vector<pair<double, double>> couple)
 {
-    double buffer = 0;
-    for (multimap<string, double>::iterator it = map.begin(); it != map.end(); ++it)
-    {
-        buffer += it->second;
-    }
-    return buffer / map.size();
+    return (esperance(couple) - esperance(main_map) * esperance(second_map)) / (ecart_type(main_map) * ecart_type(second_map));
 }

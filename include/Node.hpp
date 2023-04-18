@@ -34,6 +34,11 @@ public:
     vector<Link> getLinks() const;
     void addLink(Link link);
 
+    bool operator==(const Node &other) const
+    {
+        return filename == other.filename;
+    }
+
 private:
     string filename;
     vector<string> attributes;
