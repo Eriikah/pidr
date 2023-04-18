@@ -210,12 +210,13 @@ vector<variant<Node, Link>> getPath(Attribute attributeX, Attribute attributeY)
     return path;
 }
 
-vector<string> pathStep(Attribute observedAttribute, vector<variant<Node, Link>> path)
+vector<Element> pathStep(Element observedElement, vector<variant<Node, Link>> path)
 {
+    Attribute observedAttribute = observedElement.att;
     Node observedClass = getClass(observedAttribute);
     if (observedClass.getFilename() == visit(GetFilenameVisitor{}, *path.end()))
     {
-        vector<string> placeholder;
+        vector<Element> placeholder;
         // TODO lier à la valeur de tous les attributs
         return placeholder;
     }
@@ -231,20 +232,25 @@ vector<string> pathStep(Attribute observedAttribute, vector<variant<Node, Link>>
             }
         }
         vector<pair<string, string>> linkValues = getLinkValues(visit(GetFilenameVisitor{}, pathNode));
-        vector<string> names;
+        vector<Element> names;
         for (vector<pair<string, string>>::iterator it = linkValues.begin(); it != linkValues.end(); ++it)
         {
             bool first_column = true;
             bool second_column = true;
+            string filename = visit(GetFilenameVisitor{}, pathNode);
             if (first_column && (*it).first == observedAttribute.name)
             {
                 second_column = false;
-                names.push_back((*it).second);
+                Attribute ph_att = Attribute((*it).second, filename, 0);
+                Element added_elt = Element((*it).second, ph_att, "");
+                names.push_back(added_elt);
             }
             else if (second_column && (*it).second == observedAttribute.name)
             {
                 first_column = false;
-                names.push_back((*it).first);
+                Attribute ph_att = Attribute((*it).first, filename, 0);
+                Element added_elt = Element((*it).first, ph_att, "");
+                names.push_back(added_elt);
             }
         }
         return names;
@@ -253,7 +259,7 @@ vector<string> pathStep(Attribute observedAttribute, vector<variant<Node, Link>>
 vector<Element> getLinkedElements(Element el, vector<variant<Node, Link>> Path)
 {
     vector<Element> buffer = vector<Element>();
-    if (getClass(el.att).getFilename() == Path.back().getFilename())
+    if (getClass(el.att).getFilename() == visit(GetFilenameVisitor{}, Path.back()))
     {
         buffer.push_back(el);
         return buffer;
