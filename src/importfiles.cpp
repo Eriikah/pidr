@@ -116,3 +116,30 @@ vector<double> getValue(string filename, int column)
         cout << "Could not open the file\n";
     return content;
 }
+
+vector<pair<string, string>> getLinkValues(string filename)
+{
+    vector<pair<string, string>> content;
+    vector<string> row;
+    string line, word;
+
+    fstream file(filename, ios::in);
+    if (file.is_open())
+    {
+        while (getline(file, line))
+        {
+            row.clear();
+
+            stringstream str(line);
+
+            while (getline(str, word, ','))
+                removeEscapeCharacters(word);
+            row.push_back(word);
+            pair<string, string> pair = {row[0], row[1]};
+            content.push_back(pair);
+        }
+    }
+    else
+        cout << "Could not open the file\n";
+    return content;
+}

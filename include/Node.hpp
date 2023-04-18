@@ -44,3 +44,12 @@ private:
     vector<string> attributes;
     vector<Link> links;
 };
+
+struct GetFilenameVisitor
+{
+    template <typename T>
+    string operator()(const T &value) const
+    {
+        return value.getFilename();
+    }
+};

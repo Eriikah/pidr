@@ -23,3 +23,5 @@ vector<vector<string>> importFile(string filename);
  * @return vector of double
  */
 vector<double> getValue(string filename, int column);
+
+vector<pair<string, string>> getLinkValues(string filename);

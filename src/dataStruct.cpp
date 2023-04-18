@@ -154,6 +154,47 @@ vector<variant<Node, Link>> getPath(Attribute attributeX, Attribute attributeY)
     return path;
 }
 
+vector<string> pathStep(Attribute observedAttribute, vector<variant<Node, Link>> path)
+{
+    Node observedClass = getClass(observedAttribute);
+    if (observedClass.getFilename() == visit(GetFilenameVisitor{}, *path.end()))
+    {
+        vector<string> placeholder;
+        // TODO lier à la valeur de tous les attributs
+        return placeholder;
+    }
+    else
+    {
+        variant<Node, Link> pathNode;
+        for (vector<variant<Node, Link>>::iterator it = path.begin(); it != path.end(); ++it)
+        {
+            if (visit(GetFilenameVisitor{}, *it) == observedClass.getFilename())
+            {
+                ++it;
+                pathNode = *it;
+            }
+        }
+        vector<pair<string, string>> linkValues = getLinkValues(visit(GetFilenameVisitor{}, pathNode));
+        vector<string> names;
+        for (vector<pair<string, string>>::iterator it = linkValues.begin(); it != linkValues.end(); ++it)
+        {
+            bool first_column = true;
+            bool second_column = true;
+            if (first_column && (*it).first == observedAttribute.name)
+            {
+                second_column = false;
+                names.push_back((*it).second);
+            }
+            else if (second_column && (*it).second == observedAttribute.name)
+            {
+                first_column = false;
+                names.push_back((*it).first);
+            }
+        }
+        return names;
+    }
+}
+
 vector<string> pot(Attribute node)
 {
     vector<string> list_pot = vector<string>();
