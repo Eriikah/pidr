@@ -63,7 +63,7 @@ void setupNodesAndLinks()
     prof.addLink(teach);
 }
 
-Node getClass(Attribute att, Node begin_node, vector<Node> already_visited)
+Node getClassRec(Attribute att, Node begin_node, vector<Node> already_visited)
 {
     Node foundClass;
     bool next = true;
@@ -97,12 +97,17 @@ Node getClass(Attribute att, Node begin_node, vector<Node> already_visited)
                 }
                 if (ok)
                 {
-                    foundClass = getClass(att, next_classes[j], already_visited);
+                    foundClass = getClassRec(att, next_classes[j], already_visited);
                 }
             }
         }
     }
     return foundClass;
+}
+
+Node getClass(Attribute att)
+{
+    return getClassRec(att, prof, vector<Node>());
 }
 
 vector<variant<Node, Link>> scoutPath(Node startingNode, Node destinationNode, vector<Node> visitedClasses)
@@ -149,16 +154,15 @@ vector<variant<Node, Link>> getPath(Attribute attributeX, Attribute attributeY)
     return path;
 }
 
-// void getValues(AttributeX, AttributeY) {}
 vector<string> pot(Attribute node)
 {
     vector<string> list_pot = vector<string>();
     vector<double> nodeValues = getValue(node.filename, node.column);
-    Node ClassX = getClass(node, prof, vector<Node>());
+    Node ClassX = getClass(node);
     for (long unsigned int i = 0; i < list_att.size(); i++)
     {
         Attribute A = list_att[i];
-        Node ClassY = getClass(A, prof, vector<Node>());
+        Node ClassY = getClass(A);
 
         vector<double> value = getValue(A.filename, A.column);
     }
