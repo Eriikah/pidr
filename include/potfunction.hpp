@@ -1,6 +1,4 @@
 #include "importfiles.hpp"
-#include "Attribute.hpp"
-#include "Element.hpp"
 #include "Node.hpp"
 #include "utils.hpp"
 #include <iostream>

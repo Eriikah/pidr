@@ -120,6 +120,7 @@ vector<Node> scoutPath(Node startingNode, Node destinationNode, set<Node> visite
                 }
             }
         }
+        return pathStep;
     }
 }
 
