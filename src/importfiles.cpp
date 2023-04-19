@@ -126,8 +126,10 @@ vector<pair<string, string>> getLinkValues(string filename)
             stringstream str(line);
 
             while (getline(str, word, ','))
+            {
                 removeEscapeCharacters(word);
-            row.push_back(word);
+                row.push_back(word);
+            }
             pair<string, string> pair = {row[0], row[1]};
             content.push_back(pair);
         }
