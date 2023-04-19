@@ -3,7 +3,7 @@ CXXFLAGS := -pedantic-errors -Wall -Wextra
 LDFLAGS  := -L/usr/lib -lstdc++ -lm
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
-APP_DIR  := $(BUILD)/apps
+APP_DIR  := .
 TARGET   := program
 INCLUDE  := -Iinclude/
 SRC      :=                      \
@@ -41,7 +41,7 @@ release: all
 
 clean:
 	-@rm -rvf $(OBJ_DIR)/*
-	-@rm -rvf $(APP_DIR)/*
+	-@rm -rvf program
 
 info:
 	@echo "[*] Application dir: ${APP_DIR}     "

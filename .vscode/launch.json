@@ -1,19 +1,17 @@
 {
     "version": "0.2.0",
     "configurations": [
-        
         {
             "name": "C++ Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/apps/program",
+            "program": "${workspaceFolder}/program",
             "args": [],
-            "stopAtEntry": false,
+            "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "/usr/bin/gdb", // Replace with the path to your gdb executable
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
