@@ -1,5 +1,4 @@
 #include "importfiles.hpp"
-#include "utils.hpp"
 
 using namespace std;
 
@@ -136,4 +135,43 @@ vector<pair<string, string>> getLinkValues(string filename)
     else
         cout << "Could not open the file\n";
     return content;
+}
+
+vector<Element> getElements(Attribute X)
+{
+    vector<vector<string>> content;
+    vector<string> row;
+    string line, word;
+
+    fstream file(X.filename, ios::in);
+    if (file.is_open())
+    {
+
+        while (getline(file, line))
+        {
+            row.clear();
+
+            stringstream str(line);
+
+            while (getline(str, word, ','))
+            {
+                removeEscapeCharacters(word);
+                row.push_back(word);
+            }
+            content.push_back(row);
+        }
+    }
+    else
+    {
+        cout << "Could not open the file\n";
+    }
+
+    vector<Element> all_Els = vector<Element>();
+    long unsigned int k = X.column;
+    for (long unsigned int i = 0; i < content.size(); i++)
+    {
+        Element temp = Element(content[i][0], X, content[i][k]);
+        all_Els.push_back(temp);
+    }
+    return all_Els;
 }

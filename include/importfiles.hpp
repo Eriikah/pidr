@@ -4,6 +4,8 @@
 #include <string>
 #include <sstream>
 #include <string.h>
+#include "Element.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -25,3 +27,5 @@ vector<vector<string>> importFile(string filename);
 vector<double> getValue(string filename, int column);
 
 vector<pair<string, string>> getLinkValues(string filename);
+
+vector<Element> getElements(Attribute X);
