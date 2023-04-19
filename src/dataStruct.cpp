@@ -183,8 +183,15 @@ vector<variant<Node, Link>> scoutPath(Node startingNode, Node destinationNode, s
             pathStep.push_back(link);
             for (auto pathClass : link.getClasses())
             {
-                if (visitedClasses.find(pathClass) != visitedClasses.end())
+                for (Node const &node : visitedClasses)
                 {
+                    cout << "debug: " << node.getFilename() << ' ';
+                }
+                cout << "\n";
+
+                if (visitedClasses.find(pathClass) == visitedClasses.end())
+                {
+                    cout << "debug: " << pathClass.getAttribute()[1] << "\n";
                     visitedClasses.insert(pathClass);
                     vector<variant<Node, Link>> updatedPath = scoutPath(pathClass, destinationNode, visitedClasses);
                     pathStep.insert(pathStep.end(), updatedPath.begin(), updatedPath.end());
@@ -207,8 +214,17 @@ vector<variant<Node, Link>> getPath(Attribute attributeX, Attribute attributeY)
         Node lookedNode = ClassX;
         set<Node> visitedClasses;
         vector<variant<Node, Link>> updatedPath = scoutPath(ClassX, ClassY, visitedClasses);
+
+        // for (int i = 0; i < updatedPath.size(); i++)
+        // {
+        //     cout << "debug : scoutpath.updatedPath : " << visit(GetFilenameVisitor{}, updatedPath[i]) << "\n";
+        // }
         path.insert(path.end(), updatedPath.begin(), updatedPath.end());
     }
+    // for (int i = 0; i < path.size(); i++)
+    // {
+    //     cout << "debug : scoutpath.path : " << visit(GetFilenameVisitor{}, path[i]) << "\n";
+    // }
     return path;
 }
 
@@ -219,7 +235,6 @@ vector<Element> pathStep(Element observedElement, vector<variant<Node, Link>> pa
     if (observedClass.getFilename() == visit(GetFilenameVisitor{}, *path.end()))
     {
         vector<Element> placeholder;
-        // TODO lier à la valeur de tous les attributs
         return placeholder;
     }
     else
@@ -260,14 +275,17 @@ vector<Element> pathStep(Element observedElement, vector<variant<Node, Link>> pa
 }
 vector<Element> getLinkedElements(Element el, vector<variant<Node, Link>> Path)
 {
-    vector<Element> buffer = vector<Element>();
+    cout << "debug : bonjour";
+    vector<Element> buffer;
     if (getClass(el.att).getFilename() == visit(GetFilenameVisitor{}, Path.back()))
     {
+        cout << "debug : getLinkedElements : condition d'arret";
         buffer.push_back(el);
         return buffer;
     }
     else
     {
+        cout << "debug : getLinkedElements : recurssion";
         vector<Element> list_next_el = pathStep(el, Path);
         for (long unsigned int i = 0; i < list_next_el.size(); i++)
         {
@@ -281,12 +299,14 @@ vector<Element> getLinkedElements(Element el, vector<variant<Node, Link>> Path)
 vector<vector<string>> getValues(Attribute X, Attribute Y)
 {
     vector<variant<Node, Link>> Path = getPath(X, Y);
-    cout << visit(GetFilenameVisitor{}, Path[0]) << "\n";
     vector<vector<string>> CouplesXY;
     vector<Element> XElements = getElements(X);
     for (long unsigned int i = 0; i < XElements.size(); i++)
     {
+        cout << "debug : getValues.Xelements : " << XElements[i].id << "\n";
         vector<Element> YElements = getLinkedElements(XElements[i], Path);
+        cout << "debug : getValues Yelements : " << YElements.size() << "\n";
+
         for (long unsigned int j = 0; j < YElements.size(); j++)
         {
             vector<string> temp = vector<string>();
@@ -318,10 +338,10 @@ vector<string> pot(Attribute node)
 int main()
 {
     setupNodesAndLinks();
-    Attribute test1 = Attribute("Rating", "resources/Professeurs.csv", 1);
-    Attribute test2 = Attribute("Teaching Ability", "resources/courses.csv", 2);
+    Attribute test1 = Attribute("Rating", "resources/Professeurs.csv", 2);
+    Attribute test2 = Attribute("Teaching Ability", "resources/courses.csv", 1);
     // cout << getClass(test, prof, vector<Node>()).getFilename() << "\n";
-    vector<Element> a = getElements(test1);
+    // vector<Element> a = getElements(test2);
     vector<vector<string>> coupleXY = getValues(test1, test2);
 
     // for (long unsigned i = 0; i < a.size(); i++)
