@@ -6,6 +6,7 @@
 #include <map>
 #include <variant>
 #include <algorithm>
+#include <set>
 using namespace std;
 
 class Attribute
@@ -166,12 +167,12 @@ Node getClass(Attribute att)
     return getClassRec(att, prof, vector<Node>());
 }
 
-vector<variant<Node, Link>> scoutPath(Node startingNode, Node destinationNode, vector<Node> visitedClasses)
+vector<variant<Node, Link>> scoutPath(Node startingNode, Node destinationNode, set<Node> visitedClasses)
 {
     if (startingNode.getFilename() == destinationNode.getFilename())
     {
         vector<variant<Node, Link>> path;
-        path.insert(path.begin(), startingNode);
+        path.push_back(startingNode);
         return path;
     }
     else
@@ -179,12 +180,12 @@ vector<variant<Node, Link>> scoutPath(Node startingNode, Node destinationNode, v
         vector<variant<Node, Link>> pathStep;
         for (auto link : startingNode.getLinks())
         {
-            pathStep.insert(pathStep.begin(), link);
+            pathStep.push_back(link);
             for (auto pathClass : link.getClasses())
             {
-                if (find(visitedClasses.begin(), visitedClasses.end(), pathClass) != visitedClasses.end())
+                if (visitedClasses.find(pathClass) != visitedClasses.end())
                 {
-                    visitedClasses.insert(visitedClasses.end(), pathClass);
+                    visitedClasses.insert(pathClass);
                     vector<variant<Node, Link>> updatedPath = scoutPath(pathClass, destinationNode, visitedClasses);
                     pathStep.insert(pathStep.end(), updatedPath.begin(), updatedPath.end());
                     return pathStep;
@@ -199,13 +200,14 @@ vector<variant<Node, Link>> getPath(Attribute attributeX, Attribute attributeY)
     Node ClassX = getClass(attributeX);
     Node ClassY = getClass(attributeY);
     vector<variant<Node, Link>> path;
-    path.insert(path.begin(), ClassX);
+    path.push_back(ClassX);
 
     if (ClassX.getFilename() != ClassY.getFilename())
     {
         Node lookedNode = ClassX;
-        vector<Node> visitedClasses;
-        path.insert(path.end(), scoutPath(ClassX, ClassY, visitedClasses).begin(), scoutPath(ClassX, ClassY, visitedClasses).end());
+        set<Node> visitedClasses;
+        vector<variant<Node, Link>> updatedPath = scoutPath(ClassX, ClassY, visitedClasses);
+        path.insert(path.end(), updatedPath.begin(), updatedPath.end());
     }
     return path;
 }
@@ -279,6 +281,7 @@ vector<Element> getLinkedElements(Element el, vector<variant<Node, Link>> Path)
 vector<vector<string>> getValues(Attribute X, Attribute Y)
 {
     vector<variant<Node, Link>> Path = getPath(X, Y);
+    cout << visit(GetFilenameVisitor{}, Path[0]) << "\n";
     vector<vector<string>> CouplesXY;
     vector<Element> XElements = getElements(X);
     for (long unsigned int i = 0; i < XElements.size(); i++)
@@ -316,13 +319,24 @@ int main()
 {
     setupNodesAndLinks();
     Attribute test1 = Attribute("Rating", "resources/Professeurs.csv", 1);
-    Attribute test2 = Attribute("Teaching Ability", "resources/Professeurs.csv", 1);
+    Attribute test2 = Attribute("Teaching Ability", "resources/courses.csv", 2);
     // cout << getClass(test, prof, vector<Node>()).getFilename() << "\n";
     vector<Element> a = getElements(test1);
-    for (long unsigned i = 0; i < a.size(); i++)
-    {
-        cout << a[i].id.c_str() << " " << a[i].value.c_str() << "\n";
-    }
+    vector<vector<string>> coupleXY = getValues(test1, test2);
+
+    // for (long unsigned i = 0; i < a.size(); i++)
+    // {
+    //     cout << a[i].id.c_str() << " " << a[i].value.c_str() << "\n";
+    // }
+
+    // for (long unsigned i = 0; i < coupleXY.size(); i++)
+    // {
+    //     for (long unsigned j = 0; j < coupleXY[i].size(); j++)
+    //     {
+    //         cout << coupleXY[i][j] << " ";
+    //     }
+    //     cout << "\n";
+    // }
 
     return 0;
 }

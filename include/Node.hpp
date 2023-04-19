@@ -38,6 +38,10 @@ public:
     {
         return filename == other.filename;
     }
+    bool operator<(const Node &other) const
+    {
+        return filename < other.filename;
+    }
 
 private:
     string filename;
