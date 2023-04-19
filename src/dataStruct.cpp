@@ -45,9 +45,9 @@ Element::Element(string id, Attribute att, string value) : id(id), att(att), val
 vector<Attribute> list_att;
 Attribute node;
 
-Link follows;
-Link teach;
-Link learns;
+Node follows;
+Node teach;
+Node learns;
 
 Node prof;
 Node course;
@@ -55,30 +55,30 @@ Node students;
 Node registration;
 void setupNodesAndLinks()
 {
-    follows = Link("resources/Follows.csv");
-    teach = Link("resources/teach.csv");
-    learns = Link("resources/Learns.csv");
+    follows = Node("resources/Follows.csv", true);
+    teach = Node("resources/teach.csv", true);
+    learns = Node("resources/Learns.csv", true);
 
-    prof = Node("resources/Professeurs.csv");
-    course = Node("resources/courses.csv");
-    students = Node("resources/Students.csv");
-    registration = Node("resources/Registration.csv");
+    prof = Node("resources/Professeurs.csv", false);
+    course = Node("resources/courses.csv", false);
+    students = Node("resources/Students.csv", false);
+    registration = Node("resources/Registration.csv", false);
 
-    teach.addClasses(prof);
-    course.addLink(teach);
-    follows.addClasses(students);
-    registration.addLink(follows);
+    teach.addNext(prof);
+    course.addNext(teach);
+    follows.addNext(students);
+    registration.addNext(follows);
 
-    learns.addClasses(course);
-    learns.addClasses(registration);
-    course.addLink(learns);
-    teach.addClasses(course);
+    learns.addNext(course);
+    learns.addNext(registration);
+    course.addNext(learns);
+    teach.addNext(course);
 
-    registration.addLink(learns);
-    follows.addClasses(registration);
+    registration.addNext(learns);
+    follows.addNext(registration);
 
-    students.addLink(follows);
-    prof.addLink(teach);
+    students.addNext(follows);
+    prof.addNext(teach);
 }
 
 vector<Element> getElements(Attribute X)
@@ -136,10 +136,10 @@ Node getClassRec(Attribute att, Node begin_node, vector<Node> already_visited)
     if (next)
     {
         already_visited.push_back(begin_node);
-        vector<Link> links = begin_node.getLinks();
+        vector<Node> links = begin_node.getNexts();
         for (long unsigned int i = 0; i < links.size(); i++)
         {
-            vector<Node> next_classes = links[i].getClasses();
+            vector<Node> next_classes = links[i].getNexts();
 
             for (long unsigned int j = 0; j < next_classes.size(); j++)
             {
@@ -167,21 +167,21 @@ Node getClass(Attribute att)
     return getClassRec(att, prof, vector<Node>());
 }
 
-vector<variant<Node, Link>> scoutPath(Node startingNode, Node destinationNode, set<Node> visitedClasses)
+vector<Node> scoutPath(Node startingNode, Node destinationNode, set<Node> visitedClasses)
 {
     if (startingNode.getFilename() == destinationNode.getFilename())
     {
-        vector<variant<Node, Link>> path;
+        vector<Node> path;
         path.push_back(startingNode);
         return path;
     }
     else
     {
-        vector<variant<Node, Link>> pathStep;
-        for (auto link : startingNode.getLinks())
+        vector<Node> pathStep;
+        for (auto link : startingNode.getNexts())
         {
             pathStep.push_back(link);
-            for (auto pathClass : link.getClasses())
+            for (auto pathClass : link.getNexts())
             {
                 for (Node const &node : visitedClasses)
                 {
@@ -193,7 +193,7 @@ vector<variant<Node, Link>> scoutPath(Node startingNode, Node destinationNode, s
                 {
                     cout << "debug: " << pathClass.getAttribute()[1] << "\n";
                     visitedClasses.insert(pathClass);
-                    vector<variant<Node, Link>> updatedPath = scoutPath(pathClass, destinationNode, visitedClasses);
+                    vector<Node> updatedPath = scoutPath(pathClass, destinationNode, visitedClasses);
                     pathStep.insert(pathStep.end(), updatedPath.begin(), updatedPath.end());
                     return pathStep;
                 }
@@ -202,18 +202,18 @@ vector<variant<Node, Link>> scoutPath(Node startingNode, Node destinationNode, s
     }
 }
 
-vector<variant<Node, Link>> getPath(Attribute attributeX, Attribute attributeY)
+vector<Node> getPath(Attribute attributeX, Attribute attributeY)
 {
     Node ClassX = getClass(attributeX);
     Node ClassY = getClass(attributeY);
-    vector<variant<Node, Link>> path;
+    vector<Node> path;
     path.push_back(ClassX);
 
     if (ClassX.getFilename() != ClassY.getFilename())
     {
         Node lookedNode = ClassX;
         set<Node> visitedClasses;
-        vector<variant<Node, Link>> updatedPath = scoutPath(ClassX, ClassY, visitedClasses);
+        vector<Node> updatedPath = scoutPath(ClassX, ClassY, visitedClasses);
 
         // for (int i = 0; i < updatedPath.size(); i++)
         // {
@@ -228,33 +228,33 @@ vector<variant<Node, Link>> getPath(Attribute attributeX, Attribute attributeY)
     return path;
 }
 
-vector<Element> pathStep(Element observedElement, vector<variant<Node, Link>> path)
+vector<Element> pathStep(Element observedElement, vector<Node> path)
 {
     Attribute observedAttribute = observedElement.att;
     Node observedClass = getClass(observedAttribute);
-    if (observedClass.getFilename() == visit(GetFilenameVisitor{}, *path.end()))
+    if (observedClass.getFilename() == path.back().getFilename())
     {
         vector<Element> placeholder;
         return placeholder;
     }
     else
     {
-        variant<Node, Link> pathNode;
-        for (vector<variant<Node, Link>>::iterator it = path.begin(); it != path.end(); ++it)
+        Node pathNode;
+        for (vector<Node>::iterator it = path.begin(); it != path.end(); ++it)
         {
-            if (visit(GetFilenameVisitor{}, *it) == observedClass.getFilename())
+            if ((*it).getFilename() == observedClass.getFilename())
             {
                 ++it;
                 pathNode = *it;
             }
         }
-        vector<pair<string, string>> linkValues = getLinkValues(visit(GetFilenameVisitor{}, pathNode));
+        vector<pair<string, string>> linkValues = getLinkValues(pathNode.getFilename());
         vector<Element> names;
         for (vector<pair<string, string>>::iterator it = linkValues.begin(); it != linkValues.end(); ++it)
         {
             bool first_column = true;
             bool second_column = true;
-            string filename = visit(GetFilenameVisitor{}, pathNode);
+            string filename = pathNode.getFilename();
             if (first_column && (*it).first == observedAttribute.name)
             {
                 second_column = false;
@@ -273,11 +273,11 @@ vector<Element> pathStep(Element observedElement, vector<variant<Node, Link>> pa
         return names;
     }
 }
-vector<Element> getLinkedElements(Element el, vector<variant<Node, Link>> Path)
+vector<Element> getLinkedElements(Element el, vector<Node> Path)
 {
     cout << "debug : bonjour";
     vector<Element> buffer;
-    if (getClass(el.att).getFilename() == visit(GetFilenameVisitor{}, Path.back()))
+    if (getClass(el.att).getFilename() == Path.back().getFilename())
     {
         cout << "debug : getLinkedElements : condition d'arret";
         buffer.push_back(el);
@@ -298,7 +298,7 @@ vector<Element> getLinkedElements(Element el, vector<variant<Node, Link>> Path)
 
 vector<vector<string>> getValues(Attribute X, Attribute Y)
 {
-    vector<variant<Node, Link>> Path = getPath(X, Y);
+    vector<Node> Path = getPath(X, Y);
     vector<vector<string>> CouplesXY;
     vector<Element> XElements = getElements(X);
     for (long unsigned int i = 0; i < XElements.size(); i++)

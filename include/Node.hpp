@@ -7,32 +7,16 @@
 
 using namespace std;
 
-class Node;
-class Link
-{
-public:
-    Link();
-    Link(string filename);
-    string getFilename() const;
-    void setFilename(string filename);
-    vector<Node> getClasses();
-    void addClasses(Node classe);
-
-private:
-    string filename;
-    vector<Node> classes;
-};
-
 class Node
 {
 public:
     Node();
-    Node(string filename);
+    Node(string filename, bool islink);
     string getFilename() const;
     void setFilename(string filename);
     vector<string> getAttribute();
-    vector<Link> getLinks() const;
-    void addLink(Link link);
+    vector<Node> getNexts() const;
+    void addNext(Node link);
 
     bool operator==(const Node &other) const
     {
@@ -46,14 +30,6 @@ public:
 private:
     string filename;
     vector<string> attributes;
-    vector<Link> links;
-};
-
-struct GetFilenameVisitor
-{
-    template <typename T>
-    string operator()(const T &value) const
-    {
-        return value.getFilename();
-    }
+    vector<Node> links;
+    bool isLink;
 };

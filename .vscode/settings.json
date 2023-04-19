@@ -50,5 +50,12 @@
     "cinttypes": "cpp",
     "typeinfo": "cpp",
     "variant": "cpp"
-  }
+  },
+  "makefile.launchConfigurations": [
+    {
+      "cwd": "/home/eleve/pidr/build/apps",
+      "binaryPath": "/home/eleve/pidr/build/apps/program",
+      "binaryArgs": []
+    }
+  ]
 }
