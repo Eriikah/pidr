@@ -17,6 +17,7 @@ public:
     vector<string> getAttribute();
     vector<Node> getNexts() const;
     void addNext(Node link);
+    bool isLink();
 
     bool operator==(const Node &other) const
     {
@@ -31,5 +32,5 @@ private:
     string filename;
     vector<string> attributes;
     vector<Node> links;
-    bool isLink;
+    bool link;
 };
