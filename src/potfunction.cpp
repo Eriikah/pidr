@@ -48,15 +48,12 @@ Node getClassRec(Attribute att, Node begin_node, vector<Node> already_visited)
 {
     Node foundClass;
     bool next = true;
-    vector<string> atts = begin_node.getAttribute();
-    for (long unsigned int k = 0; k < atts.size(); k++)
+    if (begin_node.getFilename() == att.filename)
     {
-        if (atts[k] == att.name)
-        {
-            next = false;
-            foundClass = begin_node;
-        }
+        next = false;
+        foundClass = begin_node;
     }
+
     if (next)
     {
         already_visited.push_back(begin_node);
@@ -98,20 +95,17 @@ vector<Node> scoutPath(Node startingNode, Node destinationNode, set<Node> visite
     else
     {
         visitedClasses.insert(startingNode);
-        // cout << "debug : scoutpath.isLink : " << startingNode.getFilename() << " " << startingNode.isLink() << "\n";
         vector<Node> pathStep;
         for (auto link : startingNode.getNexts())
         {
             if (visitedLink.find(link) == visitedLink.end())
             {
-                // cout << "debug : scoutpath.isLink : " << link.getFilename() << " " << link.isLink() << "\n";
                 pathStep.push_back(link);
                 visitedLink.insert(link);
                 for (auto pathClass : link.getNexts())
                 {
                     if (visitedClasses.find(pathClass) == visitedClasses.end())
                     {
-                        // cout << "debug : scoutpath.isLink : " << pathClass.getFilename() << " " << pathClass.isLink() << "\n";
                         visitedClasses.insert(pathClass);
                         vector<Node> updatedPath = scoutPath(pathClass, destinationNode, visitedClasses, visitedLink);
                         pathStep.push_back(pathClass);
@@ -142,10 +136,6 @@ vector<Node> getPath(Attribute attributeX, Attribute attributeY)
 
         path.insert(path.end(), updatedPath.begin(), updatedPath.end());
     }
-    // for (int i = 0; i < path.size(); i++)
-    // {
-    //     cout << "debug : scoutpath.path : " << visit(GetFilenameVisitor{}, path[i]) << "\n";
-    // }
     return path;
 }
 
@@ -171,12 +161,10 @@ vector<Element> pathStep(Element observedElement, vector<Node> path)
         }
         vector<pair<string, string>> linkValues = getLinkValues(pathNode.getFilename());
         vector<Element> names;
-        if (pathNode.isLink())
+        string filename = pathNode.getFilename();
+        if (!pathNode.isLink())
         {
-            for (auto val : linkValues)
-            {
-                names.push_back(Element(val.second, Attribute(), val.first));
-            }
+            names.push_back(Element(observedElement.id, Attribute(pathNode.getAttribute()[0], filename, 0), observedElement.value));
         }
         else
         {
@@ -184,7 +172,6 @@ vector<Element> pathStep(Element observedElement, vector<Node> path)
             {
                 bool first_column = true;
                 bool second_column = true;
-                string filename = pathNode.getFilename();
                 if (first_column && val.first == observedElement.id)
                 {
                     second_column = false;
@@ -203,21 +190,32 @@ vector<Element> pathStep(Element observedElement, vector<Node> path)
     }
 }
 
-vector<Element> getLinkedElements(Element el, vector<Node> Path)
+vector<Element> getLinkedElements(Element el, vector<Node> Path, int endColumn)
 {
     vector<Element> buffer;
     if (getClass(el.att).getFilename() == Path.back().getFilename())
     {
-        buffer.push_back(el);
+        el.att.column = endColumn;
+        vector<Element> all = getElements(el.att);
+        for (Element fileElement : all)
+        {
+            if (fileElement.id == el.id)
+            {
+                buffer.push_back(fileElement);
+            }
+        }
         return buffer;
     }
     else
     {
         vector<Element> list_next_el = pathStep(el, Path);
-        for (auto elt : list_next_el)
+        if (list_next_el.size() > 0)
         {
-            vector<Element> newlist = getLinkedElements(elt, Path);
-            buffer.insert(buffer.end(), newlist.begin(), newlist.end());
+            for (auto elt : list_next_el)
+            {
+                vector<Element> newlist = getLinkedElements(elt, Path, endColumn);
+                buffer.insert(buffer.end(), newlist.begin(), newlist.end());
+            }
         }
 
         return buffer;
@@ -231,15 +229,12 @@ vector<vector<string>> getValues(Attribute X, Attribute Y)
     vector<Element> XElements = getElements(X);
     for (long unsigned int i = 0; i < XElements.size(); i++)
     {
-        // cout << "debug : getValues.Xelements : " << XElements[i].value << "\n";
-        vector<Element> YElements = getLinkedElements(XElements[i], Path);
-        cout << "debug : getValues Yelements : " << YElements.size() << "\n";
-
+        vector<Element> YElements = getLinkedElements(XElements[i], Path, Y.column);
         for (long unsigned int j = 0; j < YElements.size(); j++)
         {
             vector<string> temp = vector<string>();
             temp.push_back(XElements[i].value);
-            temp.push_back(YElements[j].id);
+            temp.push_back(YElements[j].value);
             CouplesXY.push_back(temp);
         }
     }

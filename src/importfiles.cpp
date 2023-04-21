@@ -119,6 +119,7 @@ vector<pair<string, string>> getLinkValues(string filename)
     fstream file(filename, ios::in);
     if (file.is_open())
     {
+        getline(file, line);
         while (getline(file, line))
         {
             row.clear();
@@ -148,7 +149,7 @@ vector<Element> getElements(Attribute X)
     fstream file(X.filename, ios::in);
     if (file.is_open())
     {
-
+        getline(file, line);
         while (getline(file, line))
         {
             row.clear();

@@ -2,13 +2,14 @@
 
 int main()
 {
+
     setupNodesAndLinks();
     Attribute test1 = Attribute("Teaching Ability", "resources/Professeurs.csv", 2);
-    Attribute test2 = Attribute("Satisfaction", "resources/Registration.csv", 1);
-    // vector<Node> a = getPath(test1, test2);
-    // for (Node i : a)
+    Attribute test2 = Attribute("Ranking", "resources/Students.csv", 2);
+    // vector<Element> a = getElements(test1);
+    // for (Element i : a)
     // {
-    //     cout << i.getFilename() << "\n";
+    //     cout << i.value << "\n";
     // }
 
     vector<vector<string>> coupleXY = getValues(test1, test2);
