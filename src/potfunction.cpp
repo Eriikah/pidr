@@ -97,21 +97,26 @@ vector<Node> scoutPath(Node startingNode, Node destinationNode, set<Node> visite
     }
     else
     {
+        visitedClasses.insert(startingNode);
+        // cout << "debug : scoutpath.isLink : " << startingNode.getFilename() << " " << startingNode.isLink() << "\n";
         vector<Node> pathStep;
         for (auto link : startingNode.getNexts())
         {
             if (visitedLink.find(link) == visitedLink.end())
             {
+                // cout << "debug : scoutpath.isLink : " << link.getFilename() << " " << link.isLink() << "\n";
                 pathStep.push_back(link);
                 visitedLink.insert(link);
                 for (auto pathClass : link.getNexts())
                 {
                     if (visitedClasses.find(pathClass) == visitedClasses.end())
                     {
+                        // cout << "debug : scoutpath.isLink : " << pathClass.getFilename() << " " << pathClass.isLink() << "\n";
                         visitedClasses.insert(pathClass);
                         vector<Node> updatedPath = scoutPath(pathClass, destinationNode, visitedClasses, visitedLink);
                         pathStep.push_back(pathClass);
                         pathStep.insert(pathStep.end(), updatedPath.begin(), updatedPath.end());
+
                         return pathStep;
                     }
                 }
@@ -135,10 +140,6 @@ vector<Node> getPath(Attribute attributeX, Attribute attributeY)
         visitedClasses.emplace(ClassX);
         vector<Node> updatedPath = scoutPath(ClassX, ClassY, visitedClasses, set<Node>());
 
-        // for (int i = 0; i < updatedPath.size(); i++)
-        // {
-        //     cout << "debug : scoutpath.updatedPath : " << visit(GetFilenameVisitor{}, updatedPath[i]) << "\n";
-        // }
         path.insert(path.end(), updatedPath.begin(), updatedPath.end());
     }
     // for (int i = 0; i < path.size(); i++)
@@ -170,46 +171,38 @@ vector<Element> pathStep(Element observedElement, vector<Node> path)
         }
         vector<pair<string, string>> linkValues = getLinkValues(pathNode.getFilename());
         vector<Element> names;
-        for (vector<pair<string, string>>::iterator it = linkValues.begin(); it != linkValues.end(); ++it)
+        if (pathNode.isLink())
         {
-            bool first_column = true;
-            bool second_column = true;
-            string filename = pathNode.getFilename();
-            if (first_column && (*it).first == observedElement.id)
+            for (auto val : linkValues)
             {
-                second_column = false;
-                Attribute ph_att = Attribute(pathNode.getAttribute()[1], filename, 0);
-                Element added_elt;
-                if (pathNode.isLink())
-                {
-                    added_elt = Element((*it).second, ph_att, "");
-                }
-                else
-                {
-                    added_elt = Element((*it).second, ph_att, observedElement.value);
-                }
-                names.push_back(added_elt);
+                names.push_back(Element(val.second, Attribute(), val.first));
             }
-            else if (second_column && (*it).second == observedElement.id)
+        }
+        else
+        {
+            for (auto val : linkValues)
             {
-                first_column = false;
-                Attribute ph_att = Attribute(pathNode.getAttribute()[0], filename, 0);
-                Element added_elt;
-                if (pathNode.isLink())
+                bool first_column = true;
+                bool second_column = true;
+                string filename = pathNode.getFilename();
+                if (first_column && val.first == observedElement.id)
                 {
-                    added_elt = Element((*it).first, ph_att, "");
+                    second_column = false;
+                    Attribute ph_att = Attribute(pathNode.getAttribute()[1], filename, 0);
+                    names.push_back(Element(val.second, ph_att, observedElement.value));
                 }
-                else
+                else if (second_column && val.second == observedElement.id)
                 {
-                    added_elt = Element((*it).first, ph_att, observedElement.value);
+                    first_column = false;
+                    Attribute ph_att = Attribute(pathNode.getAttribute()[0], filename, 0);
+                    names.push_back(Element(val.first, ph_att, observedElement.value));
                 }
-
-                names.push_back(added_elt);
             }
         }
         return names;
     }
 }
+
 vector<Element> getLinkedElements(Element el, vector<Node> Path)
 {
     vector<Element> buffer;
@@ -220,15 +213,13 @@ vector<Element> getLinkedElements(Element el, vector<Node> Path)
     }
     else
     {
-        cout << "debug : getLinkedElements : recurssion " << el.id << "\n";
         vector<Element> list_next_el = pathStep(el, Path);
-        cout << "debug : getLinkedElements : listnextel " << list_next_el.size() << "\n";
-
-        for (long unsigned int i = 0; i < list_next_el.size(); i++)
+        for (auto elt : list_next_el)
         {
-            vector<Element> newlist = getLinkedElements(list_next_el[i], Path);
+            vector<Element> newlist = getLinkedElements(elt, Path);
             buffer.insert(buffer.end(), newlist.begin(), newlist.end());
         }
+
         return buffer;
     }
 }

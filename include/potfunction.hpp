@@ -13,7 +13,7 @@ void setupNodesAndLinks();
 
 Node getClass(Attribute att);
 
-vector<Node> scoutPath(Node startingNode, Node destinationNode, set<Node> visitedClasses);
+vector<Node> scoutPath(Node startingNode, Node destinationNode, set<Node> visitedClasses, set<Node> vsistedLinks);
 
 vector<Node> getPath(Attribute attributeX, Attribute attributeY);
 
