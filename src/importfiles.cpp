@@ -31,6 +31,39 @@ vector<vector<string>> importFile(string filename)
     return content;
 }
 
+multimap<string, double> buildValueMap(string filename, int column)
+{
+
+    multimap<string, double> content;
+    vector<string> row;
+    string line, word;
+
+    fstream file(filename, ios::in);
+    if (file.is_open())
+    {
+        getline(file, line);
+        while (getline(file, line))
+        {
+            row.clear();
+
+            stringstream str(line);
+            double value;
+
+            while (getline(str, word, ','))
+            {
+                removeEscapeCharacters(word);
+                row.push_back(word);
+            }
+            value = convert(row[column]);
+            content.insert({row[0], value});
+        }
+    }
+    else
+        cout << "Could not open the file\n";
+
+    return content;
+}
+
 vector<double> getValue(string filename, int column)
 {
     vector<double> content;
@@ -45,33 +78,20 @@ vector<double> getValue(string filename, int column)
             row.clear();
 
             stringstream str(line);
-
             while (getline(str, word, ','))
             {
                 removeEscapeCharacters(word);
                 row.push_back(word);
             }
-            if (row[column] == "AVERAGE")
-            {
-                content.push_back(1);
-            }
-            else if (row[column] == "LOW")
+            if (row[column] == "LOW" || row[column] == "BAD" || row[column] == "F")
             {
                 content.push_back(0);
             }
-            else if (row[column] == "HIGH")
-            {
-                content.push_back(2);
-            }
-            else if (row[column] == "MEDIUM")
+            else if (row[column] == "AVERAGE" || row[column] == "MEDIUM" || row[column] == "E")
             {
                 content.push_back(1);
             }
-            else if (row[column] == "BAD")
-            {
-                content.push_back(0);
-            }
-            else if (row[column] == "GOOD")
+            else if (row[column] == "HIGH" || row[column] == "GOOD" || row[column] == "D")
             {
                 content.push_back(2);
             }
@@ -86,18 +106,6 @@ vector<double> getValue(string filename, int column)
             else if (row[column] == "C")
             {
                 content.push_back(3);
-            }
-            else if (row[column] == "D")
-            {
-                content.push_back(2);
-            }
-            else if (row[column] == "E")
-            {
-                content.push_back(1);
-            }
-            else if (row[column] == "F")
-            {
-                content.push_back(0);
             }
             else
             {

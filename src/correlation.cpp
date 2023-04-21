@@ -4,14 +4,22 @@
 #include <string>
 #include <vector>
 #include <math.h>
+#include "utils.hpp"
 using namespace std;
 
 double esperance(multimap<string, double> map)
 {
     multimap<double, int> probability_map;
-    for (multimap<string, double>::iterator it = map.begin(); it != map.end(); ++it)
+    for (auto v : map)
     {
-        probability_map.find(it->second)++;
+        if (probability_map.find(v.second) == probability_map.end())
+        {
+            probability_map.insert(make_pair(v.second, 1));
+        }
+        else
+        {
+            probability_map.find(v.second)->second++;
+        }
     }
     int n = map.size();
     double esperance = 0;
@@ -22,12 +30,19 @@ double esperance(multimap<string, double> map)
     return esperance;
 }
 
-double esperance(vector<pair<double, double>> couple)
+double esperance(vector<vector<double>> couple)
 {
     multimap<double, int> probability_map;
-    for (vector<pair<double, double>>::iterator it = couple.begin(); it != couple.end(); ++it)
+    for (auto v : couple)
     {
-        probability_map.find(it.base()->first * it.base()->second)++;
+        if (probability_map.find(produitTaT(v)) == probability_map.end())
+        {
+            probability_map.insert(make_pair(produitTaT(v), 1));
+        }
+        else
+        {
+            probability_map.find(produitTaT(v))->second++;
+        }
     }
     int n = couple.size();
     double esperance = 0;
@@ -59,7 +74,7 @@ double ecart_type(multimap<string, double> map)
     return sqrt(buffer / map.size());
 }
 
-double correlation(multimap<string, double> main_map, multimap<string, double> second_map, vector<pair<double, double>> couple)
+double correlation(multimap<string, double> main_map, multimap<string, double> second_map, vector<vector<double>> couple)
 {
     return (esperance(couple) - esperance(main_map) * esperance(second_map)) / (ecart_type(main_map) * ecart_type(second_map));
 }

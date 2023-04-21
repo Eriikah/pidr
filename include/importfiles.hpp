@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <string.h>
+#include <map>
 #include "Element.hpp"
 #include "utils.hpp"
 
@@ -29,3 +30,5 @@ vector<double> getValue(string filename, int column);
 vector<pair<string, string>> getLinkValues(string filename);
 
 vector<Element> getElements(Attribute X);
+
+multimap<string, double> buildValueMap(string filename, int column);

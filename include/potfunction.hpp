@@ -9,7 +9,7 @@
 #include <set>
 using namespace std;
 
-void setupNodesAndLinks();
+vector<Attribute> setupNodesAndLinks();
 
 Node getClass(Attribute att);
 
@@ -21,6 +21,6 @@ vector<Element> pathStep(Element observedElement, vector<Node> path);
 
 vector<Element> getLinkedElements(Element el, vector<Node> Path);
 
-vector<vector<string>> getValues(Attribute X, Attribute Y);
+vector<vector<double>> getValues(Attribute X, Attribute Y);
 
-vector<string> pot(Attribute node);
+vector<Attribute> pot(Attribute X, vector<Attribute> list_att);

@@ -1,8 +1,8 @@
 #include "potfunction.hpp"
+#include "correlation.hpp"
 
 using namespace std;
 
-vector<Attribute> list_att;
 Attribute node;
 
 Node follows;
@@ -13,8 +13,9 @@ Node prof;
 Node course;
 Node students;
 Node registration;
-void setupNodesAndLinks()
+vector<Attribute> setupNodesAndLinks()
 {
+    vector<Attribute> list_att;
     follows = Node("resources/Follows.csv", true);
     teach = Node("resources/teach.csv", true);
     learns = Node("resources/Learns.csv", true);
@@ -26,6 +27,30 @@ void setupNodesAndLinks()
     course = Node("resources/courses.csv", false);
     students = Node("resources/Students.csv", false);
     registration = Node("resources/Registration.csv", false);
+    int i = 0;
+    for (auto att : prof.getAttribute())
+    {
+        list_att.push_back(Attribute(att, prof.getFilename(), i));
+        i++;
+    }
+    i = 0;
+    for (auto att : course.getAttribute())
+    {
+        list_att.push_back(Attribute(att, course.getFilename(), i));
+        i++;
+    }
+    i = 0;
+    for (auto att : students.getAttribute())
+    {
+        list_att.push_back(Attribute(att, students.getFilename(), i));
+        i++;
+    }
+    i = 0;
+    for (auto att : registration.getAttribute())
+    {
+        list_att.push_back(Attribute(att, registration.getFilename(), i));
+        i++;
+    }
 
     teach.addNext(prof);
     course.addNext(teach);
@@ -42,6 +67,8 @@ void setupNodesAndLinks()
 
     students.addNext(follows);
     prof.addNext(teach);
+
+    return list_att;
 }
 
 Node getClassRec(Attribute att, Node begin_node, vector<Node> already_visited)
@@ -222,19 +249,19 @@ vector<Element> getLinkedElements(Element el, vector<Node> Path, int endColumn)
     }
 }
 
-vector<vector<string>> getValues(Attribute X, Attribute Y)
+vector<vector<double>> getValues(Attribute X, Attribute Y)
 {
     vector<Node> Path = getPath(X, Y);
-    vector<vector<string>> CouplesXY;
+    vector<vector<double>> CouplesXY;
     vector<Element> XElements = getElements(X);
     for (long unsigned int i = 0; i < XElements.size(); i++)
     {
         vector<Element> YElements = getLinkedElements(XElements[i], Path, Y.column);
         for (long unsigned int j = 0; j < YElements.size(); j++)
         {
-            vector<string> temp = vector<string>();
-            temp.push_back(XElements[i].value);
-            temp.push_back(YElements[j].value);
+            vector<double> temp = vector<double>();
+            temp.push_back(convert(XElements[i].value));
+            temp.push_back(convert(YElements[j].value));
             CouplesXY.push_back(temp);
         }
     }
@@ -242,18 +269,25 @@ vector<vector<string>> getValues(Attribute X, Attribute Y)
     return CouplesXY;
 }
 
-vector<string> pot(Attribute node)
+vector<Attribute> pot(Attribute X, vector<Attribute> list_att)
 {
-    vector<string> list_pot = vector<string>();
-    vector<double> nodeValues = getValue(node.filename, node.column);
-    Node ClassX = getClass(node);
-    for (long unsigned int i = 0; i < list_att.size(); i++)
+    vector<Attribute> list_pot = vector<Attribute>();
+    multimap<string, double> X_val = buildValueMap(X.filename, X.column);
+    Node ClassX = getClass(X);
+    for (auto Y : list_att)
     {
-        Attribute A = list_att[i];
-        Node ClassY = getClass(A);
-
-        vector<double> value = getValue(A.filename, A.column);
+        if (Y.name != X.name && Y.filename != X.filename && Y.column != 0)
+        {
+            Node ClassY = getClass(Y);
+            multimap<string, double> Y_val = buildValueMap(Y.filename, Y.column);
+            vector<vector<double>> XY_couple = getValues(X, Y);
+            double corr = correlation(X_val, Y_val, XY_couple);
+            cout << corr << "\n";
+            if (abs(corr) > 0.5)
+            {
+                list_pot.push_back(Y);
+            }
+        }
     }
-    // TODO:la metrique
     return list_pot;
 }
