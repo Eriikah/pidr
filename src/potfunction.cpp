@@ -276,14 +276,14 @@ vector<Attribute> pot(Attribute X, vector<Attribute> list_att)
     Node ClassX = getClass(X);
     for (auto Y : list_att)
     {
-        if (Y.name != X.name && Y.filename != X.filename && Y.column != 0)
+        if (!(Y.name == X.name && Y.filename == X.filename) && Y.column != 0)
         {
             Node ClassY = getClass(Y);
             multimap<string, double> Y_val = buildValueMap(Y.filename, Y.column);
             vector<vector<double>> XY_couple = getValues(X, Y);
             double corr = correlation(X_val, Y_val, XY_couple);
             cout << corr << "\n";
-            if (abs(corr) > 0.5)
+            if (abs(corr) > 0.2)
             {
                 list_pot.push_back(Y);
             }
