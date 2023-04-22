@@ -249,20 +249,18 @@ vector<Element> getLinkedElements(Element el, vector<Node> Path, int endColumn)
     }
 }
 
-vector<vector<double>> getValues(Attribute X, Attribute Y)
+vector<pair<double, double>> getValues(Attribute X, Attribute Y)
 {
     vector<Node> Path = getPath(X, Y);
-    vector<vector<double>> CouplesXY;
+    vector<pair<double, double>> CouplesXY;
     vector<Element> XElements = getElements(X);
     for (long unsigned int i = 0; i < XElements.size(); i++)
     {
         vector<Element> YElements = getLinkedElements(XElements[i], Path, Y.column);
         for (long unsigned int j = 0; j < YElements.size(); j++)
         {
-            vector<double> temp = vector<double>();
-            temp.push_back(convert(XElements[i].value));
-            temp.push_back(convert(YElements[j].value));
-            CouplesXY.push_back(temp);
+            CouplesXY.push_back(
+                make_pair(convert(XElements[i].value), convert(YElements[j].value)));
         }
     }
 
@@ -280,8 +278,8 @@ vector<Attribute> pot(Attribute X, vector<Attribute> list_att)
         {
             Node ClassY = getClass(Y);
             multimap<string, double> Y_val = buildValueMap(Y.filename, Y.column);
-            vector<vector<double>> XY_couple = getValues(X, Y);
-            double corr = correlation(X_val, Y_val, XY_couple);
+            vector<pair<double, double>> XY_couple = getValues(X, Y);
+            double corr = correlation(XY_couple);
             cout << corr << "\n";
             if (abs(corr) > 0.2)
             {

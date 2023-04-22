@@ -7,74 +7,83 @@
 #include "utils.hpp"
 using namespace std;
 
-double esperance(multimap<string, double> map)
+double cov(vector<pair<double, double>> couple)
 {
-    multimap<double, int> probability_map;
-    for (auto v : map)
-    {
-        if (probability_map.find(v.second) == probability_map.end())
-        {
-            probability_map.insert(make_pair(v.second, 1));
-        }
-        else
-        {
-            probability_map.find(v.second)->second++;
-        }
-    }
-    int n = map.size();
-    double esperance = 0;
-    for (multimap<double, int>::iterator it = probability_map.begin(); it != probability_map.end(); ++it)
-    {
-        esperance += it->first * (it->second) / n;
-    }
-    return esperance;
-}
-
-double esperance(vector<vector<double>> couple)
-{
-    multimap<double, int> probability_map;
+    multimap<double, int> p_map_XY;
+    multimap<double, int> p_map_Y;
+    multimap<double, int> p_map_X;
     for (auto v : couple)
     {
-        if (probability_map.find(produitTaT(v)) == probability_map.end())
+        if (p_map_XY.find(produitTaT(v)) == p_map_XY.end())
         {
-            probability_map.insert(make_pair(produitTaT(v), 1));
+            p_map_XY.insert(make_pair(produitTaT(v), 1));
         }
         else
         {
-            probability_map.find(produitTaT(v))->second++;
+            p_map_XY.find(produitTaT(v))->second++;
+        }
+        if (p_map_X.find(v.first) == p_map_X.end())
+        {
+            p_map_X.insert(make_pair(v.first, 1));
+        }
+        else
+        {
+            p_map_X.find(v.first)->second++;
+        }
+        if (p_map_Y.find(v.second) == p_map_Y.end())
+        {
+            p_map_Y.insert(make_pair(v.second, 1));
+        }
+        else
+        {
+            p_map_Y.find(v.second)->second++;
         }
     }
     int n = couple.size();
-    double esperance = 0;
-    for (multimap<double, int>::iterator it = probability_map.begin(); it != probability_map.end(); ++it)
+    double esp_XY = 0;
+    double esp_X = 0;
+    double esp_Y = 0;
+    for (multimap<double, int>::iterator it = p_map_XY.begin(); it != p_map_XY.end(); ++it)
     {
-        esperance += it->first * (it->second) / n;
+        esp_XY += it->first * (it->second) / n;
     }
-    return esperance;
+    for (multimap<double, int>::iterator it = p_map_X.begin(); it != p_map_X.end(); ++it)
+    {
+        esp_X += it->first * (it->second) / n;
+    }
+    for (multimap<double, int>::iterator it = p_map_Y.begin(); it != p_map_Y.end(); ++it)
+    {
+        esp_Y += it->first * (it->second) / n;
+    }
+    return esp_XY - (esp_X * esp_Y);
 }
 
-double moyenne(multimap<string, double> map)
+pair<double, double> moyenne(vector<pair<double, double>> couple)
 {
-    double buffer = 0;
-    for (multimap<string, double>::iterator it = map.begin(); it != map.end(); ++it)
+    double X_buffer = 0;
+    double Y_buffer = 0;
+    for (auto p : couple)
     {
-        buffer += it->second;
+        X_buffer += p.first;
+        Y_buffer += p.second;
     }
-    return buffer / map.size();
+    return make_pair(X_buffer / couple.size(), Y_buffer / couple.size());
 }
 
-double ecart_type(multimap<string, double> map)
+double sigmas(vector<pair<double, double>> couple)
 {
-    double X_bar = moyenne(map);
-    double buffer = 0;
-    for (multimap<string, double>::iterator it = map.begin(); it != map.end(); ++it)
+    pair<double, double> moyennes = moyenne(couple);
+    double X_buffer = 0;
+    double Y_buffer = 0;
+    for (auto p : couple)
     {
-        buffer += pow((it->second - X_bar), 2);
+        X_buffer += pow(p.first - moyennes.first, 2);
+        Y_buffer += pow(p.second - moyennes.second, 2);
     }
-    return sqrt(buffer / map.size());
+    return sqrt(X_buffer * Y_buffer) / couple.size();
 }
 
-double correlation(multimap<string, double> main_map, multimap<string, double> second_map, vector<vector<double>> couple)
+double correlation(vector<pair<double, double>> couple)
 {
-    return (esperance(couple) - esperance(main_map) * esperance(second_map)) / (ecart_type(main_map) * ecart_type(second_map));
+    return cov(couple) / sigmas(couple);
 }

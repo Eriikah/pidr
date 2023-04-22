@@ -12,7 +12,7 @@ int main()
     //     cout << i.value << "\n";
     // }
 
-    vector<vector<double>> coupleXY = getValues(test1, test2);
+    vector<pair<double, double>> coupleXY = getValues(test1, test2);
 
     // for (long unsigned i = 0; i < coupleXY.size(); i++)
     // {

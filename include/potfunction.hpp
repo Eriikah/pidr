@@ -21,6 +21,6 @@ vector<Element> pathStep(Element observedElement, vector<Node> path);
 
 vector<Element> getLinkedElements(Element el, vector<Node> Path);
 
-vector<vector<double>> getValues(Attribute X, Attribute Y);
+vector<pair<double, double>> getValues(Attribute X, Attribute Y);
 
 vector<Attribute> pot(Attribute X, vector<Attribute> list_att);

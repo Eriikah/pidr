@@ -6,12 +6,10 @@
 #include <math.h>
 using namespace std;
 
-double esperance(multimap<string, double> map);
+double correlation(vector<pair<double, double>> couple);
 
-double esperance(vector<pair<double, double>> couple);
+pair<double, double> moyenne(vector<pair<double, double>> couple);
 
-double moyenne(multimap<string, double> map);
+double sigmas(vector<pair<double, double>> couple);
 
-double ecart_type(multimap<string, double> map);
-
-double correlation(multimap<string, double> main_map, multimap<string, double> second_map, vector<vector<double>> couple);
+double cov(vector<pair<double, double>> couple);

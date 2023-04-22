@@ -13,39 +13,22 @@ void removeEscapeCharacters(string &s)
             s.end());
 }
 
-double produitTaT(vector<double> vect)
+double produitTaT(pair<double, double> vect)
 {
-    double buffer = 1;
-    for (auto val : vect)
-    {
-        buffer = buffer * val;
-    }
-    return buffer;
+    return vect.first * vect.second;
 }
 
 double convert(string str)
 {
-    if (str == "LOW" || str == "BAD" || str == "F")
-    {
-        return 0;
-    }
-    else if (str == "AVERAGE" || str == "MEDIUM" || str == "E")
+    if (str == "LOW" || str == "BAD" || str == "F" || str == "E")
     {
         return 1;
     }
-    else if (str == "HIGH" || str == "GOOD" || str == "D")
+    else if (str == "AVERAGE" || str == "MEDIUM" || str == "D" || str == "C")
     {
         return 2;
     }
-    else if (str == "A")
-    {
-        return 5;
-    }
-    else if (str == "B")
-    {
-        return 4;
-    }
-    else if (str == "C")
+    else if (str == "HIGH" || str == "GOOD" || str == "A" || str == "B")
     {
         return 3;
     }
