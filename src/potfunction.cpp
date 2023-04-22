@@ -30,25 +30,37 @@ vector<Attribute> setupNodesAndLinks()
     int i = 0;
     for (auto att : prof.getAttribute())
     {
-        list_att.push_back(Attribute(att, prof.getFilename(), i));
+        if (i != 0)
+        {
+            list_att.push_back(Attribute(att, prof.getFilename(), i));
+        }
         i++;
     }
     i = 0;
     for (auto att : course.getAttribute())
     {
-        list_att.push_back(Attribute(att, course.getFilename(), i));
+        if (i != 0)
+        {
+            list_att.push_back(Attribute(att, course.getFilename(), i));
+        }
         i++;
     }
     i = 0;
     for (auto att : students.getAttribute())
     {
-        list_att.push_back(Attribute(att, students.getFilename(), i));
+        if (i != 0)
+        {
+            list_att.push_back(Attribute(att, students.getFilename(), i));
+        }
         i++;
     }
     i = 0;
     for (auto att : registration.getAttribute())
     {
-        list_att.push_back(Attribute(att, registration.getFilename(), i));
+        if (i != 0)
+        {
+            list_att.push_back(Attribute(att, registration.getFilename(), i));
+        }
         i++;
     }
 

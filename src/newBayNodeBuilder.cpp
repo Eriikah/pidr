@@ -27,3 +27,15 @@ void newBayNodeBuilder(BayesianNode newBayNode, vector<BayesianNode> S_prev, vec
         }
     }
 }
+
+vector<Attribute> removeEl(vector<Attribute> myvector, Attribute att)
+{
+    for (unsigned i = 0; i < myvector.size(); ++i)
+    {
+        if (myvector[i].name == att.name)
+        {
+            myvector.erase(myvector.begin() + i);
+        }
+    }
+    return myvector;
+}
