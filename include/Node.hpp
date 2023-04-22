@@ -15,8 +15,8 @@ public:
     string getFilename() const;
     void setFilename(string filename);
     vector<string> getAttribute();
-    vector<Node> getNexts() const;
-    void addNext(Node link);
+    vector<Node *> getNexts() const;
+    void addNext(Node *link);
     bool isLink();
 
     bool operator==(const Node &other) const
@@ -31,6 +31,6 @@ public:
 private:
     string filename;
     vector<string> attributes;
-    vector<Node> links;
+    vector<Node *> links;
     bool link;
 };

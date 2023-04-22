@@ -52,21 +52,21 @@ vector<Attribute> setupNodesAndLinks()
         i++;
     }
 
-    teach.addNext(prof);
-    course.addNext(teach);
-    follows.addNext(students);
-    registration.addNext(follows);
+    teach.addNext(&prof);
+    course.addNext(&teach);
+    follows.addNext(&students);
+    registration.addNext(&follows);
 
-    learns.addNext(course);
-    learns.addNext(registration);
-    course.addNext(learns);
-    teach.addNext(course);
+    learns.addNext(&course);
+    learns.addNext(&registration);
+    course.addNext(&learns);
+    teach.addNext(&course);
 
-    registration.addNext(learns);
-    follows.addNext(registration);
+    registration.addNext(&learns);
+    follows.addNext(&registration);
 
-    students.addNext(follows);
-    prof.addNext(teach);
+    students.addNext(&follows);
+    prof.addNext(&teach);
 
     return list_att;
 }
@@ -85,14 +85,14 @@ Node getClassRec(Attribute att, Node begin_node, vector<Node> already_visited)
     {
         already_visited.push_back(begin_node);
 
-        vector<Node> next_classes = begin_node.getNexts();
+        vector<Node *> next_classes = begin_node.getNexts();
 
         for (long unsigned int j = 0; j < next_classes.size(); j++)
         {
             bool ok = true;
             for (long unsigned k = 0; k < already_visited.size(); k++)
             {
-                if (next_classes[j].getFilename() == already_visited[k].getFilename())
+                if ((*next_classes[j]).getFilename() == already_visited[k].getFilename())
                 {
                     ok = false;
                     break;
@@ -100,7 +100,7 @@ Node getClassRec(Attribute att, Node begin_node, vector<Node> already_visited)
             }
             if (ok)
             {
-                foundClass = getClassRec(att, next_classes[j], already_visited);
+                foundClass = getClassRec(att, *next_classes[j], already_visited);
             }
         }
     }
@@ -125,17 +125,17 @@ vector<Node> scoutPath(Node startingNode, Node destinationNode, set<Node> visite
         vector<Node> pathStep;
         for (auto link : startingNode.getNexts())
         {
-            if (visitedLink.find(link) == visitedLink.end())
+            if (visitedLink.find(*link) == visitedLink.end())
             {
-                pathStep.push_back(link);
-                visitedLink.insert(link);
-                for (auto pathClass : link.getNexts())
+                pathStep.push_back(*link);
+                visitedLink.insert(*link);
+                for (auto pathClass : (*link).getNexts())
                 {
-                    if (visitedClasses.find(pathClass) == visitedClasses.end())
+                    if (visitedClasses.find(*pathClass) == visitedClasses.end())
                     {
-                        visitedClasses.insert(pathClass);
-                        vector<Node> updatedPath = scoutPath(pathClass, destinationNode, visitedClasses, visitedLink);
-                        pathStep.push_back(pathClass);
+                        visitedClasses.insert(*pathClass);
+                        vector<Node> updatedPath = scoutPath(*pathClass, destinationNode, visitedClasses, visitedLink);
+                        pathStep.push_back(*pathClass);
                         pathStep.insert(pathStep.end(), updatedPath.begin(), updatedPath.end());
 
                         return pathStep;

@@ -77,13 +77,15 @@ double sigmas(vector<pair<double, double>> couple)
     double Y_buffer = 0;
     for (auto p : couple)
     {
-        X_buffer += pow(p.first - moyennes.first, 2);
-        Y_buffer += pow(p.second - moyennes.second, 2);
+        X_buffer += pow((p.first - moyennes.first), 2);
+        Y_buffer += pow((p.second - moyennes.second), 2);
     }
     return sqrt(X_buffer * Y_buffer) / couple.size();
 }
 
 double correlation(vector<pair<double, double>> couple)
 {
+    double c = cov(couple);
+    double sig = sigmas(couple);
     return cov(couple) / sigmas(couple);
 }

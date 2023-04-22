@@ -1,11 +1,11 @@
 #include "Node.hpp"
 #include "utils.hpp"
 
-Node::Node() : filename(""), attributes(vector<string>()), links(vector<Node>()), link(false)
+Node::Node() : filename(""), attributes(vector<string>()), links(vector<Node *>()), link(false)
 {
 }
 
-Node::Node(string filename, bool islink) : filename(filename), attributes(vector<string>()), links(vector<Node>()), link(islink)
+Node::Node(string filename, bool islink) : filename(filename), attributes(vector<string>()), links(vector<Node *>()), link(islink)
 {
 }
 
@@ -45,12 +45,12 @@ vector<string> Node::getAttribute()
     return this->attributes;
 }
 
-vector<Node> Node::getNexts() const
+vector<Node *> Node::getNexts() const
 {
     return this->links;
 }
 
-void Node::addNext(Node link)
+void Node::addNext(Node *link)
 {
     this->links.push_back(link);
 }
