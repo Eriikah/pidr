@@ -89,3 +89,178 @@ double correlation(vector<pair<double, double>> couple)
     double sig = sigmas(couple);
     return cov(couple) / sigmas(couple);
 }
+
+pair<double, double> check_impl_direct(vector<pair<double, double>> couple)
+{
+    multimap<string, int> impl_counter;
+    impl_counter.insert(make_pair("high", 0));
+    impl_counter.insert(make_pair("mid", 0));
+    impl_counter.insert(make_pair("low", 0));
+    double c_high = 0;
+    double c_mid = 0;
+    double c_low = 0;
+    for (auto p : couple)
+    {
+        if (p.first >= 3)
+        {
+            c_high += 1;
+            if (p.second >= 3)
+            {
+                impl_counter.find("high")->second++;
+            }
+        }
+        else if (p.first >= 2)
+        {
+            c_mid += 1;
+            if (p.second >= 2)
+            {
+                impl_counter.find("mid")->second++;
+            }
+        }
+        else
+        {
+            c_low += 1;
+            if (p.second < 2)
+            {
+                impl_counter.find("low")->second++;
+            }
+        }
+    }
+    double test = (impl_counter.find("high")->second) / c_high;
+    double dir = (((impl_counter.find("high")->second) / c_high) + (impl_counter.find("mid")->second / c_mid) + (impl_counter.find("low")->second / c_low)) / 3;
+    impl_counter.find("high")->second = 0;
+    impl_counter.find("mid")->second = 0;
+    impl_counter.find("low")->second = 0;
+    c_high = 0;
+    c_mid = 0;
+    c_low = 0;
+    for (auto p : couple)
+    {
+        if (p.second >= 3)
+        {
+            c_high += 1;
+            if (p.first >= 3)
+            {
+                impl_counter.find("high")->second++;
+            }
+        }
+        else if (p.second >= 2)
+        {
+            c_mid += 1;
+            if (p.first >= 2)
+            {
+                impl_counter.find("mid")->second++;
+            }
+        }
+        else
+        {
+            c_low += 1;
+            if (p.first < 2)
+            {
+                impl_counter.find("low")->second++;
+            }
+        }
+    }
+    return make_pair(dir, ((impl_counter.find("high")->second / c_high) + (impl_counter.find("mid")->second / c_mid) + (impl_counter.find("low")->second / c_low)) / 3);
+}
+
+pair<double, double> check_impl_indirect(vector<pair<double, double>> couple)
+{
+    multimap<string, int> impl_counter;
+    impl_counter.insert(make_pair("high", 0));
+    impl_counter.insert(make_pair("mid", 0));
+    impl_counter.insert(make_pair("low", 0));
+    double c_high = 0;
+    double c_mid = 0;
+    double c_low = 0;
+    for (auto p : couple)
+    {
+        if (p.first >= 3)
+        {
+            c_high += 1;
+            if (p.second <= 1)
+            {
+                impl_counter.find("high")->second++;
+            }
+        }
+        else if (p.first >= 2)
+        {
+            c_mid += 1;
+            if (p.second <= 2)
+            {
+                impl_counter.find("mid")->second++;
+            }
+        }
+        else
+        {
+            c_low += 1;
+            if (p.second > 2)
+            {
+                impl_counter.find("low")->second++;
+            }
+        }
+    }
+    double dir = ((impl_counter.find("high")->second / c_high) + (impl_counter.find("mid")->second / c_mid) + (impl_counter.find("low")->second / c_low)) / 3;
+    impl_counter.find("high")->second = 0;
+    impl_counter.find("mid")->second = 0;
+    impl_counter.find("low")->second = 0;
+    c_high = 0;
+    c_mid = 0;
+    c_low = 0;
+    for (auto p : couple)
+    {
+        if (p.second >= 3)
+        {
+            c_high += 1;
+            if (p.first <= 1)
+            {
+                impl_counter.find("high")->second++;
+            }
+        }
+        else if (p.second >= 2)
+        {
+            c_mid += 1;
+            if (p.first <= 2)
+            {
+                impl_counter.find("mid")->second++;
+            }
+        }
+        else
+        {
+            c_low += 1;
+            if (p.first > 2)
+            {
+                impl_counter.find("low")->second++;
+            }
+        }
+    }
+    return make_pair(dir, ((impl_counter.find("high")->second / c_high) + (impl_counter.find("mid")->second / c_mid) + (impl_counter.find("low")->second / c_low)) / 3);
+}
+
+int order(vector<pair<double, double>> couple)
+{
+    if (correlation(couple) > 0)
+    {
+        auto impl = check_impl_direct(couple);
+        if (impl.first > impl.second)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    else
+    {
+        auto impl = check_impl_indirect(couple);
+        if (impl.first > impl.second)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+}
