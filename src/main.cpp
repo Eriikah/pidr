@@ -21,4 +21,7 @@ int main()
 
         Suiv = removeEl(Suiv, Suiv[0]);
     }
+
+    S.back().print();
+    return 0;
 }
