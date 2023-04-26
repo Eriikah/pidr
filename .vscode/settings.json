@@ -58,5 +58,6 @@
       "binaryPath": "/home/eleve/pidr/build/apps/program",
       "binaryArgs": []
     }
-  ]
+  ],
+  "C_Cpp.errorSquiggles": "enabled"
 }

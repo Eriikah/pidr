@@ -13,3 +13,5 @@ pair<double, double> moyenne(vector<pair<double, double>> couple);
 double sigmas(vector<pair<double, double>> couple);
 
 double cov(vector<pair<double, double>> couple);
+
+int order(vector<pair<double, double>> couple);
