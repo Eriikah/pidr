@@ -5,21 +5,21 @@ BayesianNode::BayesianNode()
 {
 }
 
-BayesianNode::BayesianNode(Attribute *att) : attribute(att)
+BayesianNode::BayesianNode(Attribute att) : attribute(att)
 {
 }
 
-Attribute *BayesianNode::getAttribute()
+Attribute BayesianNode::getAttribute()
 {
     return this->attribute;
 }
 
-vector<Relationship *> BayesianNode::getRelationship() const
+vector<Relationship> BayesianNode::getRelationship() const
 {
     return this->relationships;
 }
 
-void BayesianNode::addRelationship(Relationship *link)
+void BayesianNode::addRelationship(Relationship link)
 {
     this->relationships.push_back(link);
 }
@@ -28,21 +28,21 @@ void BayesianNode::print()
 {
     if (this->getRelationship().size() == 0)
     {
-        cout << this->attribute->name << "\n";
+        cout << this->getAttribute().name << "\n";
     }
     else
     {
-        for (Relationship *rel : this->relationships)
+        for (Relationship rel : this->relationships)
         {
-            if ((*rel).getDirection() == -1)
+            if (rel.getDirection() == -1)
             {
                 cout << " <= ";
-                (*(*rel).getNode()).print();
+                rel.getNode().print();
             }
-            else if ((*rel).getDirection() == 1)
+            else if (rel.getDirection() == 1)
             {
                 cout << " => ";
-                (*(*rel).getNode()).print();
+                rel.getNode().print();
             }
         }
     }

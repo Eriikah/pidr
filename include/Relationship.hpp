@@ -9,12 +9,12 @@ class Relationship
 {
 public:
     Relationship();
-    Relationship(BayesianNode *node, int direction);
-    BayesianNode *getNode();
+    Relationship(BayesianNode node, int direction);
+    BayesianNode getNode();
     int getDirection() const;
 
 private:
-    BayesianNode *node;
+    BayesianNode node;
     int direction;
 };
 #endif

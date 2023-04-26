@@ -3,9 +3,9 @@
 // renvoie toutes les alternatives
 using namespace std;
 
-void newBayNodeBuilder(BayesianNode newBayNode, vector<BayesianNode> S_prev, vector<Attribute> list_att)
+BayesianNode newBayNodeBuilder(BayesianNode newBayNode, vector<BayesianNode> S_prev, vector<Attribute> list_att)
 {
-    vector<Attribute> potNewNode = pot(*(newBayNode.getAttribute()), list_att);
+    vector<Attribute> potNewNode = (pot(newBayNode.getAttribute(), list_att));
     for (BayesianNode A : S_prev)
     {
         /**On verifie si  l'attribut de A et
@@ -17,25 +17,27 @@ void newBayNodeBuilder(BayesianNode newBayNode, vector<BayesianNode> S_prev, vec
          */
         for (Attribute pot : potNewNode)
         {
-
-            if (A.getAttribute()->name == pot.name)
+            if (pot.name == A.getAttribute().name)
             {
                 int dir = 1;
-                Relationship newRel = Relationship(&A, dir);
-                newBayNode.addRelationship(&newRel);
+                Relationship newRel = Relationship(A, dir);
+                newBayNode.addRelationship(newRel);
             }
         }
     }
+    return newBayNode;
 }
 
 vector<Attribute> removeEl(vector<Attribute> myvector, Attribute att)
 {
-    for (unsigned i = 0; i < myvector.size(); ++i)
+    set<Attribute> newset;
+    for (long unsigned int j = 0; j < myvector.size(); j++)
     {
-        if (myvector[i].name == att.name)
+        if (myvector[j].name != att.name)
         {
-            myvector.erase(myvector.begin() + i);
+            newset.insert(myvector[j]);
         }
     }
-    return myvector;
+    vector<Attribute> v(newset.begin(), newset.end());
+    return v;
 }

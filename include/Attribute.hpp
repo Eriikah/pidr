@@ -10,4 +10,8 @@ public:
     int column;
     Attribute();
     Attribute(string name, string filename, int column);
+    bool operator<(const Attribute &other) const
+    {
+        return name < other.name;
+    }
 };

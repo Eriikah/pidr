@@ -16,15 +16,15 @@ class BayesianNode
 {
 public:
     BayesianNode();
-    BayesianNode(Attribute *att);
-    Attribute *getAttribute();
-    vector<Relationship *> getRelationship() const;
-    void addRelationship(Relationship *link);
+    BayesianNode(Attribute att);
+    Attribute getAttribute();
+    vector<Relationship> getRelationship() const;
+    void addRelationship(Relationship link);
     void print();
 
 private:
-    Attribute *attribute;
-    vector<Relationship *> relationships;
+    Attribute attribute;
+    vector<Relationship> relationships;
 };
 
 #endif

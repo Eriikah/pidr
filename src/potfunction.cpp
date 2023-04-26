@@ -293,7 +293,7 @@ vector<Attribute> pot(Attribute X, vector<Attribute> list_att)
             vector<pair<double, double>> XY_couple = getValues(X, Y);
             double corr = correlation(XY_couple);
             cout << corr << "\n";
-            if (abs(corr) > 0.2)
+            if (abs(corr) > 0.15)
             {
                 list_pot.push_back(Y);
             }

@@ -5,11 +5,11 @@ Relationship::Relationship() : direction(1)
 {
 }
 
-Relationship::Relationship(BayesianNode *node, int direction) : node(node), direction(direction)
+Relationship::Relationship(BayesianNode node, int direction) : node(node), direction(direction)
 {
 }
 
-BayesianNode *Relationship::getNode()
+BayesianNode Relationship::getNode()
 {
     return this->node;
 }
