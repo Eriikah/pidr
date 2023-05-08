@@ -20,7 +20,7 @@ public:
     Attribute getAttribute();
     vector<Relationship> getRelationship() const;
     void addRelationship(Relationship link);
-    void print();
+    void print(int i);
 
 private:
     Attribute attribute;

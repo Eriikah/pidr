@@ -85,7 +85,10 @@ int main()
 
         Suiv.pop();
     }
-
-    S.back().print();
+    for (BayesianNode node : S)
+    {
+        node.print(0);
+        cout << "\n";
+    }
     return 0;
 }

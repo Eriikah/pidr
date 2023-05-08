@@ -1,5 +1,4 @@
 #include "potfunction.hpp"
-#include "correlation.hpp"
 
 using namespace std;
 

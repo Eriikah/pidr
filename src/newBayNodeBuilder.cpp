@@ -19,7 +19,8 @@ BayesianNode newBayNodeBuilder(BayesianNode newBayNode, vector<BayesianNode> S_p
         {
             if (pot.name == A.getAttribute().name)
             {
-                int dir = 1;
+                vector<pair<double, double>> XY_couple = getValues(newBayNode.getAttribute(), pot);
+                int dir = order(XY_couple);
                 Relationship newRel = Relationship(A, dir);
                 newBayNode.addRelationship(newRel);
             }

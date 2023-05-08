@@ -24,26 +24,25 @@ void BayesianNode::addRelationship(Relationship link)
     this->relationships.push_back(link);
 }
 
-void BayesianNode::print()
+void BayesianNode::print(int i)
 {
-    if (this->getRelationship().size() == 0)
+    cout << this->attribute.name << "\n";
+    for (Relationship rel : this->relationships)
     {
-        cout << this->getAttribute().name << "\n";
-    }
-    else
-    {
-        for (Relationship rel : this->relationships)
+        if (rel.getDirection() == -1)
         {
-            if (rel.getDirection() == -1)
+
+            cout << " <= ";
+            rel.getNode().print(i + 1);
+        }
+        else if (rel.getDirection() == 1)
+        {
+            for (int j = 0; j < i; j++)
             {
-                cout << " <= ";
-                rel.getNode().print();
+                cout << "\t";
             }
-            else if (rel.getDirection() == 1)
-            {
-                cout << " => ";
-                rel.getNode().print();
-            }
+            cout << " => ";
+            rel.getNode().print(i + 1);
         }
     }
 }
